@@ -31,6 +31,8 @@ pip install -r requirements.txt
 ```
 
 ## Evaluation
+### Download VHM weights
+Please refer to this [guide](https://github.com/opendatalab/VHM/blob/main/README.md#models) to download the corresponding VHM model weights.
 
 ### Single GPU:
 ```sh

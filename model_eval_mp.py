@@ -24,9 +24,9 @@ from vhm_model import VHM
 from smp import dump
 
 
-# rs_v7.2 
+
 model_path_map = {
-    'vhm':r'~/cks/vhm-7b_sft',
+    'vhm':'FitzPC/vhm_7B',
 }
 
 BENCH_DATASETS = {
