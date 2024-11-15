@@ -5,6 +5,8 @@
 ## Setup
 Create a new conda env, and Install the necessary dependencies:
 ```sh
+git clone https://github.com/fitzpchao/RSEvalKit
+cd RSEvalKit
 conda create -n rseval
 conda activate rseval
 pip install -r requirements.txt
