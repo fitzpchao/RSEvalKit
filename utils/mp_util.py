@@ -1,3 +1,8 @@
+import sys
+import os
+# Add the parent directory to Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
 from multiprocessing import Pool
 import os
 from typing import Callable, Iterable, Sized
@@ -7,7 +12,7 @@ from rich.progress import (BarColumn, MofNCompleteColumn, Progress, Task,
 from rich.text import Text
 import os.path as osp
 import portalocker
-from smp import load, dump
+from RSEvalKit.smp import load, dump
 
 
 class _Worker:
