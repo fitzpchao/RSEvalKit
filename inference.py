@@ -16,7 +16,7 @@ from vhm.conversation import conv_templates, SeparatorStyle
 from vhm.model.builder import load_pretrained_model
 from vhm.utils import disable_torch_init
 from vhm.mm_utils import tokenizer_image_token, get_model_name_from_path, KeywordsStoppingCriteria
-from vhm import VHM
+from vhm_model import VHM
 
 
 # rs_v7.2

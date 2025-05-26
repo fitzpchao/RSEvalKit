@@ -1,5 +1,10 @@
+import sys
+import os
+# Add the parent directory to Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
 import pandas as pd
-from smp import *
+from RSEvalKit.smp import load, dump
 LAST_MODIFIED = 231126000000
 
 dataset_URLs = {
@@ -146,7 +151,7 @@ class TSVDataset:
                 
                 download_file(url, data_path)
 
-        data = load(data_path)
+        data = smp.load(data_path)
 
         image_map = {x: y for x, y in zip(data['index'], data['image'])}
         for k, v in image_map.items():
