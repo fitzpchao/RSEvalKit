@@ -104,18 +104,18 @@ def load_image(image_file):
     return image
 
 
-def convt_qa(conversations, task_type):
+def convt_qa(conversations, task_index):
     values = [conversation['value'] for conversation in conversations]
     query = values[0]
     answer = values[1]
 
-    if 'cls' in task_type:
+    if 'cls' in task_index:
         query = '{CLS}' +' '+ query
-    elif 'vqa' in task_type:
+    elif 'vqa' in task_index:
         query = '{VQA}' +' '+ query 
-    elif 'vg' in task_type:
+    elif 'vg' in task_index:
         query = '{VG}' +' '+ query
-    elif 'color' in task_type or 'presence' in task_type or 'position' in task_type:
+    elif 'color' in task_index or 'presence' in task_index or 'position' in task_index:
         query = '{IDK}' +' '+ query
     else:
         query = '{IT}' +' '+ query
@@ -774,7 +774,7 @@ def eval_results_ciou(args, result_json_file, save_excel):
     return perf_dict
 
 
-def infer_single(model, anns_json_path, anns, task_type):
+def infer_single(model, anns_json_path, anns,task_index):
     fn = anns['image']
     if os.path.isabs(anns['image_path']):
         fn_full = os.path.join(anns['image_path'],fn)
@@ -782,7 +782,7 @@ def infer_single(model, anns_json_path, anns, task_type):
         dataset_base = os.path.dirname(anns_json_path)
         fn_full = os.path.join(dataset_base, anns['image_path'], fn)
 
-    q,a = convt_qa(anns['conversations'], task_type)
+    q,a = convt_qa(anns['conversations'], task_index)
     q = q.replace('<image>\n','')
     if 'size' not in anns.keys():
         image = Image.open(fn_full).convert('RGB')
@@ -800,7 +800,7 @@ def infer_single(model, anns_json_path, anns, task_type):
     return result_dict
 
 
-def infer_model(args, model, anns_json_path, task_type, save_json, local_rank, world_size):
+def infer_model(args, model, anns_json_path, task_index, save_json, local_rank, world_size):
     with open(anns_json_path, 'r') as f:
         anns_dict = json.load(f)
     
@@ -814,7 +814,7 @@ def infer_model(args, model, anns_json_path, task_type, save_json, local_rank, w
     final_results = []
     for idx, anns in tqdm(enumerate(sub_anns_dict), total=len(sub_anns_dict)):
         # print(idx,'/',len(anns_dict))
-        result_dict = infer_single(model, anns_json_path, anns, task_type)
+        result_dict = infer_single(model, anns_json_path, anns, task_index)
 
         final_results.append(json.dumps(result_dict))
         # count += 1
@@ -842,14 +842,14 @@ def infer_model(args, model, anns_json_path, task_type, save_json, local_rank, w
             f.write('\n'.join(final_results))
 
 
-def eval_task(args, model, task_index, local_rank, world_size):
+def eval_task(args, model,task_index, local_rank, world_size):
     anns_json, task_type = BENCH_DATASETS[task_index]
     anns_json_path = os.path.abspath(os.path.join(args.dataset_base, anns_json)) if not os.path.isabs(anns_json) else anns_json
     test_name = os.path.splitext(os.path.basename(anns_json_path))[0]
     save_json = os.path.join(args.save_path, test_name + '_' + model_path_map[args.model_name].split('/')[-1]+'_eval.jsonl')
     save_excel = os.path.join(args.save_path, test_name + '_' + model_path_map[args.model_name].split('/')[-1]+'_eval.xlsx')
     if not os.path.exists(save_json) or args.force_inference:
-        infer_model(args, model, anns_json_path, task_type, save_json, local_rank, world_size)
+        infer_model(args, model, anns_json_path, task_index,save_json, local_rank, world_size)
     else:
         # check integrity
         with open(anns_json_path, 'r') as f:
@@ -857,7 +857,7 @@ def eval_task(args, model, task_index, local_rank, world_size):
         with open(save_json, 'r') as f:
             save_dict = f.readlines()
         if len(anns_dict) != len(save_dict):
-            infer_model(args, model, anns_json_path, task_type, save_json, local_rank, world_size)
+            infer_model(args, model, anns_json_path, task_index, save_json, local_rank, world_size)
 
 
     if local_rank == 0:
